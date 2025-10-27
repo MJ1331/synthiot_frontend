@@ -6,6 +6,7 @@ import {
   Route,
   useNavigate,
   Navigate,
+  useParams,
 } from 'react-router-dom';
 import axios from 'axios';
 import { initializeApp } from 'firebase/app';
@@ -26,6 +27,7 @@ import {
   Loader,
   PlusCircle,
 } from 'lucide-react';
+import ProjectChat from './ProjectChat'; // make sure this file exists and exports default
 
 // ---------------- CONFIG ----------------
 const firebaseConfig = {
@@ -67,6 +69,7 @@ const Home = ({ user, setAuthMessage, handleSignOut }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const fetchProjects = async () => {
     if (!user) return;
@@ -171,7 +174,11 @@ const Home = ({ user, setAuthMessage, handleSignOut }) => {
           ) : (
             <div className="grid gap-3">
               {projects.map(p => (
-                <div key={p.id} className="p-3 border rounded-lg bg-white shadow-sm">
+                <div
+                  key={p.id}
+                  onClick={() => navigate(`/project/${p.id}`)}
+                  className="p-3 border rounded-lg bg-white shadow-sm cursor-pointer hover:shadow-md transition"
+                >
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-medium text-indigo-700">{p.name}</h4>
@@ -355,6 +362,7 @@ const AppInner = () => {
     <Routes>
       <Route path="/" element={<Navigate to="/home" replace />} />
       <Route path="/home" element={<Home user={user} setAuthMessage={displayMessage} handleSignOut={handleSignOut} />} />
+      <Route path="/project/:id" element={<ProjectChat user={user} setAuthMessage={displayMessage} navigateBack={() => navigate('/home')} />} />
       <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   );
